@@ -211,7 +211,7 @@ graph LR
 RSSHub 实现智能路由优先级算法，确保最精确的路由匹配：
 
 ```typescript
-// 路由优先级计算逻辑
+// 路由优先级计算逻辑 - 示例代码（实际实现位于 lib/registry.ts:149-176）
 function calculateRoutePriority(route: string): number {
     let priority = 0;
     
@@ -240,7 +240,7 @@ function calculateRoutePriority(route: string): number {
 ### 路由参数处理流程
 
 ```typescript
-// 路由参数验证和转换管道
+// 路由参数验证和转换管道 - 示例代码（相关实现位于 lib/middleware/parameter.ts）
 const parameterPipeline = [
     validateRequired,    // 必需参数验证
     typeConversion,     // 类型转换
@@ -318,7 +318,7 @@ graph TB
 ### 浏览器实例管理
 
 ```typescript
-// 浏览器池管理实现
+// 浏览器池管理实现 - 示例代码（实际实现位于 lib/utils/puppeteer.ts:66-188）
 class BrowserPool {
     private instances: Map<string, Browser> = new Map();
     private readonly maxInstances = 10;
@@ -363,7 +363,7 @@ class BrowserPool {
 ### 代理管理和故障转移
 
 ```typescript
-// 代理管理系统
+// 代理管理系统 - 示例代码（相关实现位于 lib/utils/proxy/）
 class ProxyManager {
     private proxies: ProxyConfig[] = [];
     private failedProxies: Set<string> = new Set();
@@ -434,7 +434,7 @@ graph TD
 #### 缓存中间件
 
 ```typescript
-// 智能缓存中间件
+// 智能缓存中间件 - 基于 lib/middleware/cache.ts:13-78 的架构设计
 export const cacheMiddleware = (): MiddlewareHandler => {
     return async (ctx, next) => {
         const cacheKey = generateCacheKey(ctx);
@@ -467,7 +467,7 @@ export const cacheMiddleware = (): MiddlewareHandler => {
 #### 认证中间件
 
 ```typescript
-// 统一认证中间件
+// 统一认证中间件 - 示例代码（相关实现位于各路由的认证逻辑中）
 export const authMiddleware = (): MiddlewareHandler => {
     return async (ctx, next) => {
         const route = ctx.req.path;
@@ -495,7 +495,7 @@ export const authMiddleware = (): MiddlewareHandler => {
 #### 模板中间件
 
 ```typescript
-// JSX 模板渲染中间件
+// JSX 模板渲染中间件 - 基于 lib/middleware/template.tsx:9-131 的架构设计
 export const templateMiddleware = (): MiddlewareHandler => {
     return async (ctx, next) => {
         await next();
@@ -518,7 +518,7 @@ export const templateMiddleware = (): MiddlewareHandler => {
 ### 中间件扩展机制
 
 ```typescript
-// 中间件注册系统
+// 中间件注册系统 - 示例代码（实际实现位于 lib/app-bootstrap.tsx:27-47）
 class MiddlewareManager {
     private middlewares: Map<string, MiddlewareHandler> = new Map();
     private beforeHooks: Map<string, Hook[]> = new Map();
@@ -606,7 +606,7 @@ graph TB
 RSSHub 使用 XXH64 哈希算法生成高性能缓存键：
 
 ```typescript
-// 缓存键生成策略
+// 缓存键生成策略 - 基于 lib/middleware/cache.ts:19-24 的实际实现
 function generateCacheKey(ctx: Context): string {
     const components = [
         ctx.req.path,                    // 请求路径
@@ -647,7 +647,7 @@ function calculateTTL(ctx: Context): number {
 ### 请求去重和并发控制
 
 ```typescript
-// 请求去重管理器
+// 请求去重管理器 - 基于 lib/middleware/cache.ts:25-43 的设计理念
 class RequestDeduplicator {
     private inProgress: Map<string, Promise<any>> = new Map();
     private readonly timeout = 30000; // 30秒超时
@@ -685,7 +685,7 @@ class RequestDeduplicator {
 ### 缓存预热和失效策略
 
 ```typescript
-// 缓存预热系统
+// 缓存预热系统 - 示例代码（缓存实现位于 lib/utils/cache/）
 class CacheWarmer {
     private warmupRoutes: string[] = [];
     private schedule: NodeJS.Timeout | null = null;
@@ -787,7 +787,7 @@ graph LR
 RSSHub 使用自定义 JSX 引擎实现高性能模板渲染：
 
 ```typescript
-// JSX 渲染核心实现
+// JSX 渲染核心实现 - 基于 Hono JSX 渲染器的架构设计（参考 lib/app-bootstrap.tsx:32-37）
 class JSXRenderer {
     private templateCache: Map<string, CompiledTemplate> = new Map();
     
@@ -822,7 +822,7 @@ class JSXRenderer {
 ### RSS 模板实现
 
 ```typescript
-// RSS 模板组件
+// RSS 模板组件 - 基于 lib/views/rss.tsx:4-62 的实际实现
 export const RSSTemplate: React.FC<FeedData> = ({ 
     title, 
     description, 
@@ -885,7 +885,7 @@ export const RSSTemplate: React.FC<FeedData> = ({
 ### 多格式输出支持
 
 ```typescript
-// 格式路由器
+// 格式路由器 - 基于 lib/middleware/template.tsx:116-128 的实际实现
 class FormatRouter {
     private formatHandlers: Map<string, FormatHandler> = new Map();
     
@@ -943,7 +943,7 @@ class FormatRouter {
 ### 内容清洗and优化
 
 ```typescript
-// 内容清洗处理器
+// 内容清洗处理器 - 基于 lib/middleware/template.tsx:42-94 的设计理念
 class ContentSanitizer {
     private cleaningRules: CleaningRule[] = [
         // 移除恶意脚本
@@ -1041,7 +1041,7 @@ graph TB
 ### 性能指标收集
 
 ```typescript
-// 自定义指标收集器
+// 自定义指标收集器 - 基于 lib/utils/otel/metric.ts:18-55 的实际实现
 class MetricsCollector {
     private prometheus = require('prom-client');
     private metrics: Map<string, any> = new Map();
@@ -1099,7 +1099,7 @@ class MetricsCollector {
 ### 分布式追踪
 
 ```typescript
-// OpenTelemetry 集成
+// OpenTelemetry 集成 - 基于 lib/utils/otel/ 目录下的实际实现
 import { trace, context, SpanStatusCode } from '@opentelemetry/api';
 
 class TracingManager {
@@ -1147,7 +1147,7 @@ class TracingManager {
 ### 健康检查系统
 
 ```typescript
-// 健康检查管理器
+// 健康检查管理器 - 示例代码（健康检查实现位于 lib/routes/healthz.ts）
 class HealthCheckManager {
     private checks: Map<string, HealthCheck> = new Map();
     private interval: NodeJS.Timeout | null = null;
@@ -1339,7 +1339,7 @@ describe('Your Service', () => {
 ### 中间件开发
 
 ```typescript
-// 自定义中间件开发模板
+// 自定义中间件开发模板 - 基于 lib/middleware/ 目录下现有中间件的设计模式
 export const customMiddleware = (options: MiddlewareOptions = {}): MiddlewareHandler => {
     return async (ctx, next) => {
         const startTime = Date.now();
@@ -1393,7 +1393,7 @@ async function postprocessResponse(ctx: Context, options: MiddlewareOptions) {
 ### 工具函数开发
 
 ```typescript
-// 工具函数开发模板
+// 工具函数开发模板 - 基于 lib/utils/ 目录下现有工具函数的设计模式
 import { load } from 'cheerio';
 import type { CheerioAPI } from 'cheerio';
 
