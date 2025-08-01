@@ -1,0 +1,84 @@
+services:
+  rsshub:
+    # 使用本地构建的镜像，启用 Puppeteer 功能
+    image: rsshub-local:china
+    restart: always
+    ports:
+      - "1200:1200"
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: redis
+      REDIS_URL: "redis://redis:6379/"
+      PUPPETEER_WS_ENDPOINT: "ws://browserless:3000"
+    volumes:
+      # 持久化日志和配置
+      - ./data/rsshub/logs:/app/logs
+      - ./data/rsshub/config:/app/config
+      # 持久化 Puppeteer 缓存
+      - ./data/rsshub/puppeteer:/app/.cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - redis
+      - browserless
+    # 资源限制
+    mem_limit: 2g
+    memswap_limit: 2g
+    shm_size: 1g
+
+  browserless:
+    image: browserless/chrome
+    restart: always
+    ports:
+      - "3000:3000"  # 可选：暴露端口用于调试
+    environment:
+      # Browserless 配置
+      MAX_CONCURRENT_SESSIONS: 10
+      CONNECTION_TIMEOUT: 60000
+      MAX_QUEUE_LENGTH: 10
+      PREBOOT_CHROME: true
+      KEEP_ALIVE: true
+      CHROME_REFRESH_TIME: 0
+      DEFAULT_BLOCK_ADS: true
+      DEFAULT_STEALTH: true
+    volumes:
+      # 持久化浏览器数据和下载文件
+      - ./data/browserless/downloads:/downloads
+      - ./data/browserless/fonts:/usr/share/fonts/truetype/custom
+      - ./data/browserless/sessions:/tmp/browserless
+    ulimits:
+      core:
+        hard: 0
+        soft: 0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # 资源限制（可选）
+    mem_limit: 2g
+    memswap_limit: 2g
+    cpu_count: 2
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      # 持久化 Redis 数据
+      - redis-data:/data
+      - ./data/redis/redis.conf:/etc/redis/redis.conf
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+    mem_limit: 512m
+
+volumes:
+  redis-data:
+    driver: local
